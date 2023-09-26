@@ -12,6 +12,7 @@ const {
   read,
   update,
   list,
+  productStar,
 } = require('../controllers/product')
 
 // routes
@@ -22,5 +23,7 @@ router.get('/product/:slug', read)
 router.put('/product/:slug', authCheck, adminCheck, update)
 
 router.post('/products', list)
+
+router.put('/product/star/:productId', authCheck, productStar)
 
 module.exports = router
