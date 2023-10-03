@@ -4,7 +4,6 @@ const slugify = require("slugify")
 
 exports.create = async (req, res) => {
   try {
-    console.log(req.body)
     req.body.slug = slugify(req.body.title)
     const newProduct = await new Product(req.body).save()
     res.json(newProduct)
@@ -109,4 +108,62 @@ exports.productStar = async (req, res) => {
   }
 
   res.json({ messageCode: "PRR01", message: "Product Rating Updated" })
+}
+
+exports.listRelated = async (req, res) => {
+  const product = await Product.findById(req.params.productId).exec()
+
+  const related = await Product.find({
+    _id: { $ne: product._id },
+    category: product.category,
+  })
+    .limit(3)
+    .populate("category")
+    .populate("subs")
+    .exec()
+
+  res.json(related)
+}
+
+const handleQuery = async (req, res, query) => {
+  const products = await Product.find({ $text: { $search: query } })
+    .populate("category", "_id name")
+    .populate("subs", "_id name")
+    // .populate("postedBy", "_id name")
+    .exec()
+
+  res.json(products)
+}
+
+const handlePrice = async (req, res, price) => {
+  try {
+    let products = await Product.find({
+      price: {
+        $gte: price[0],
+        $lte: price[1],
+      },
+    })
+      .populate("category", "_id name")
+      .populate("subs", "_id name")
+      // .populate("postedBy", "_id name")
+      .exec()
+
+    res.json(products)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+exports.searchFilters = async (req, res) => {
+  const { query, price } = req.body
+
+  if (query) {
+    console.log("query", query)
+    await handleQuery(req, res, query)
+  }
+  // price [20, 200]
+  if (price !== undefined) {
+    console.log("price ---> ", price)
+    await handlePrice(req, res, price)
+  }
 }
