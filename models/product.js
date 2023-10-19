@@ -1,5 +1,5 @@
-const mongoose = require("mongoose")
-const { ObjectId } = mongoose.Schema
+const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Schema;
 
 const productSchema = new mongoose.Schema(
   {
@@ -56,7 +56,7 @@ const productSchema = new mongoose.Schema(
     },
     brand: {
       type: String,
-      enum: ["Apple", "Samsung", "Microsoft", "Lenovo", "ASUS"],
+      enum: ["Apple", "Samsung", "Microsoft", "Lenovo", "Asus"],
     },
     ratings: [
       {
@@ -66,6 +66,6 @@ const productSchema = new mongoose.Schema(
     ],
   },
   { timestamps: true }
-)
+);
 
-module.exports = mongoose.model("Product", productSchema)
+module.exports = mongoose.model("Product", productSchema);
