@@ -29,7 +29,7 @@ exports.userCart = async (req, res) => {
     cartTotal = cartTotal + products[i].price * products[i].count;
   }
 
-  let newCart = await new Cart({
+  await new Cart({
     products,
     cartTotal,
     orderdBy: user._id,
@@ -114,4 +114,34 @@ exports.orders = async (req, res) => {
     .exec();
 
   res.json(userOrders);
+};
+
+exports.addToWishlist = async (req, res) => {
+  const { productId } = req.body;
+
+  await User.findOneAndUpdate(
+    { email: req.user.email },
+    { $addToSet: { wishlist: productId } }
+  ).exec();
+
+  res.json({ ok: true });
+};
+
+exports.wishlist = async (req, res) => {
+  const list = await User.findOne({ email: req.user.email })
+    .select("wishlist")
+    .populate("wishlist")
+    .exec();
+
+  res.json(list);
+};
+
+exports.removeFromWishlist = async (req, res) => {
+  const { productId } = req.params;
+  const user = await User.findOneAndUpdate(
+    { email: req.user.email },
+    { $pull: { wishlist: productId } }
+  ).exec();
+
+  res.json({ ok: true });
 };
