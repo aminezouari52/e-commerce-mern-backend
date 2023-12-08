@@ -53,15 +53,13 @@ exports.getUserCart = async (req, res) => {
 };
 
 exports.emptyCart = async (req, res) => {
-  console.log("empty cart");
   const user = await User.findOne({ email: req.user.email }).exec();
-
   const cart = await Cart.findOneAndRemove({ orderdBy: user._id }).exec();
   res.json(cart);
 };
 
 exports.saveAddress = async (req, res) => {
-  const userAddress = await User.findOneAndUpdate(
+  await User.findOneAndUpdate(
     { email: req.user.email },
     { address: req.body.address }
   ).exec();
@@ -70,7 +68,7 @@ exports.saveAddress = async (req, res) => {
 };
 
 exports.savePhone = async (req, res) => {
-  const userPhone = await User.findOneAndUpdate(
+  await User.findOneAndUpdate(
     { email: req.user.email },
     { phone: req.body.phone }
   ).exec();
